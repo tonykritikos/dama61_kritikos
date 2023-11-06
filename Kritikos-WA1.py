@@ -34,22 +34,22 @@ y_1 = data_1['Cantril ladder score'].values
 
 # 1
 
-# Make polynomial object with the degree 8
+# Making polynomial object with the degree 8
 poly_1 = PolynomialFeatures(degree=8)
 
-# Transform polynomial to the independent variable X_1
+# Transforming polynomial to the independent variable X_1
 X_1_poly = poly_1.fit_transform(X_1)
 
-# Create linear regression model
+# Creating linear regression model
 model_1 = LinearRegression()
 
-# Fir linear regression model to the polynomial features
+# Fitting linear regression model to the polynomial features
 model_1.fit(X_1_poly, y_1)
 
-# Make the prediction of y_1 using the previously made polynomial
+# Making the prediction of y_1 using the previously made polynomial
 y_1_pred = model_1.predict(X_1_poly)
 
-# Construct the plot
+# Constructing the plot
 plt.scatter(X_1, y_1, label='data_1')
 plt.plot(X_1, y_1_pred, color='red', label='Polynomial Regression')
 plt.legend()
@@ -62,10 +62,10 @@ plt.show()
 
 GDP_to_predict = 97000
 
-# Transform GDP_to_predict into its polynomial representation.
+# Transforming GDP_to_predict into its polynomial representation
 GDP_to_predict_poly = poly_1.transform([[GDP_to_predict]])
 
-# Make the prediction of LSI for GDP using the polynomial generated in the line above
+# Making the prediction of LSI for GDP using the polynomial generated in the line above
 LSI_predicted = model_1.predict(GDP_to_predict_poly)
 print("Predicted LSI for GDP=97000 : ", LSI_predicted[0])
 # Console output:
