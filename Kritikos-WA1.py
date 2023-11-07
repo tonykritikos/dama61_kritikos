@@ -20,17 +20,13 @@ from sklearn.model_selection import cross_val_predict
 print("--- Ecercise 1 ---")
 
 # Loading data
-data_1 = pd.read_csv('C:\\Users\\antonisk\\Desktop\\DAMA\\DAMA61\\gdp-vs-happiness.csv')
+# Downloading and prepare the data
+data_1 = "https://github.com/ageron/data/raw/main/"
+lifesat = pd.read_csv(data_1 + "lifesat/lifesat_full.csv")
 
-# Replacing null values with column mean
-data_1['GDP per capita, PPP (constant 2017 international $)'] = data_1[
-	'GDP per capita, PPP (constant 2017 international $)'].fillna(
-	data_1['GDP per capita, PPP (constant 2017 international $)'].mean())
-data_1['Cantril ladder score'] = data_1['Cantril ladder score'].fillna(data_1['Cantril ladder score'].mean())
-
-# Turn columns into arrays
-X_1 = data_1['GDP per capita, PPP (constant 2017 international $)'].values.reshape(-1, 1)  # make array two-dimensional
-y_1 = data_1['Cantril ladder score'].values
+# Turning columns into arrays
+X_1 = lifesat["GDP per capita (USD)"].values.reshape(-1, 1)
+y_1 = lifesat["Life satisfaction"].values
 
 # 1
 
@@ -66,10 +62,10 @@ GDP_to_predict = 97000
 GDP_to_predict_poly = poly_1.transform([[GDP_to_predict]])
 
 # Making the prediction of LSI for GDP using the polynomial generated in the line above
-LSI_predicted = model_1.predict(GDP_to_predict_poly)
-print("Predicted LSI for GDP=97000 : ", LSI_predicted[0])
+LSI_predicted = model_1.predict(GDP_to_predict_poly)[0]
+print("Predicted LSI for GDP=97000 : ", LSI_predicted)
 # Console output:
-# Predicted LSI for GDP=97000 :  6.091735197288818
+# Predicted LSI for GDP=97000 :  5.25018016958461
 
 # 3
 
@@ -85,15 +81,15 @@ LSI_neighbors = [y_1[i] for i in nearest_neighbors_indices]
 LSI_estimate = np.mean(LSI_neighbors)
 print("Estimated LSI : ", LSI_estimate)
 # Console output:
-# Estimated LSI :  5.749003048369446
+# Estimated LSI :  7.133333333333333
 
 # 4
 
 # We see that the two predictions we got from the previous questions are different which was
 # expected. Different modeling approaches bring different results. The fact that the two numbers
-# are just slightly different could mean we're on the right track to having a good model, but
-# the decision on which model is the most appropriate is always up for debate, and really depends
-# on the person conducting the research.
+# are very different is most likely because we had to set the polynomial features degree to 8 as
+# asked from the exercise which ends up overfitting the model. Other approach would be a different
+# number of chosen neighbors in the kNN which also had to be 3 as asked in the exercise.
 
 # 5
 
@@ -116,16 +112,13 @@ plt.xlabel('Polynomial Degree')
 plt.ylabel('R-squared Value')
 plt.title('R-squared vs. Polynomial Degree')
 plt.show()
-# By appending it to a list and plot a graph it is visible that up to the 4th degree of the
+# By appending it to a list and plot a graph it is visible that up to the 6th degree of the
 # polynomial the R-squared Value is at its highest, hence a good fit for the model, but from there
 # as the degrees rise the goodness of fit lowers
 
 print("    ")
 ##### Exercise 2 #####
 print("--- Ecercise 2 ---")
-
-# Very useful
-# https://inria.github.io/scikit-learn-mooc/python_scripts/datasets_california_housing.html
 
 # Loading the data using the provided dataset
 data_2 = fetch_california_housing(as_frame=True)
@@ -163,7 +156,7 @@ mse = mean_squared_error(y_2, y_2_pred)
 rmse = np.sqrt(mse)
 print("RMSE : ", rmse)
 # Console output:
-# RMSE :  0.1956181997359604
+# RMSE :  0.19878101905851503
 
 # Getting feature importances from the best model
 feature_importances = best_model.feature_importances_
@@ -179,14 +172,14 @@ top_features = sorted_feature_importance_df.head(3)
 print("Top features : ")
 print(top_features)
 # Console output:
-# 		Top features :
-# 		    Feature  Importance
-# 		0    MedInc    0.515069
-# 		5  AveOccup    0.137605
-# 		6  Latitude    0.097248
+# Top features :
+#     Feature  Importance
+# 0    MedInc    0.522870
+# 5  AveOccup    0.133947
+# 6  Latitude    0.092459
 
 # From the output of the above code we get: The parameters of the best model being 'max_features': 8 and
-# 'n_estimators': 25 by utilizing the functions of GridSearchCV. An RMSE as low as 0.202 which means that the model
+# 'n_estimators': 25 by utilizing the functions of GridSearchCV. An RMSE as low as 0.198 which means that the model
 # is pretty good at predicting housing prices in California. The top three most important features of the model are
 # MedInc, AveOccup and Latitude in that order from most important to least important.
 
@@ -216,13 +209,13 @@ X_3_train_pca = pca.fit_transform(X_3_train)
 X_3_test_pca = pca.transform(X_3_test)
 
 # Creating an SVM classifier
-clf = SVC()
+svm_cl = SVC()
 
 # Training the SVM classifier on reduced training data
-clf.fit(X_3_train_pca, y_3_train_binary)
+svm_cl.fit(X_3_train_pca, y_3_train_binary)
 
 # Calculating predictions using cross-validation with 3 folds
-cv_predictions = cross_val_predict(clf, X_3_train_pca, y_3_train_binary, cv=3)
+cv_predictions = cross_val_predict(svm_cl, X_3_train_pca, y_3_train_binary, cv=3)
 
 # Calculating accuracy, precision, and recall using cross-validation results
 accuracy = accuracy_score(y_3_train_binary, cv_predictions)
@@ -233,9 +226,9 @@ print("Accuracy:", accuracy)
 print("Precision:", precision)
 print("Recall:", recall)
 # Console output:
-# 			Accuracy: 0.9815
-# 			Precision: 0.9320370706887152
-# 			Recall: 0.8745098039215686
+# 			Accuracy: 0.9815333333333334
+# 			Precision: 0.9322187897510449
+# 			Recall: 0.8746803069053708
 
 
 # Calculating accuracy of the "not-4" guessing model
@@ -254,11 +247,11 @@ wrong_not_4 = confusion[0][1]
 print("Wrongly classified as 4s:", wrong_4)
 print("Wrongly classified as non-4s:", wrong_not_4)
 # Console output:
-#               Wrongly classified as 4s: 736
-#               Wrongly classified as non-4s: 374
+# 			Wrongly classified as 4s: 735
+# 			Wrongly classified as non-4s: 373
 
 # Predicting probabilities on the test set
-y_3_prob_test = clf.decision_function(X_3_test_pca)
+y_3_prob_test = svm_cl.decision_function(X_3_test_pca)
 
 # Calculating the ROC curve for the test set
 fpr, tpr, _ = roc_curve(y_3_test_binary, y_3_prob_test)
@@ -280,4 +273,4 @@ plt.show()
 
 print("Test Set AUC:", auc)
 # Console output:
-#           Test Set AUC: 0.9936129224311124
+# 			Test Set AUC: 0.9935979287497957
