@@ -28,8 +28,6 @@ lifesat = pd.read_csv(data_1 + "lifesat/lifesat_full.csv")
 X_1 = lifesat["GDP per capita (USD)"].values.reshape(-1, 1)
 y_1 = lifesat["Life satisfaction"].values
 
-# 1
-
 # Making polynomial object with the degree 8
 poly_1 = PolynomialFeatures(degree=8)
 
@@ -54,8 +52,6 @@ plt.ylabel('Life Satisfaction')
 plt.title('Polynomial Regression')
 plt.show()
 
-# 2
-
 GDP_to_predict = 97000
 
 # Transforming GDP_to_predict into its polynomial representation
@@ -66,8 +62,6 @@ LSI_predicted = model_1.predict(GDP_to_predict_poly)[0]
 print("Predicted LSI for GDP=97000 : ", LSI_predicted)
 # Console output:
 # Predicted LSI for GDP=97000 :  5.25018016958461
-
-# 3
 
 # Creating nearest neighbors model on X_1 with decided number of neighbors three
 nearest_neighbors = NearestNeighbors(n_neighbors=3).fit(X_1)
@@ -83,15 +77,11 @@ print("Estimated LSI : ", LSI_estimate)
 # Console output:
 # Estimated LSI :  7.133333333333333
 
-# 4
-
 # We see that the two predictions we got from the previous questions are different which was
 # expected. Different modeling approaches bring different results. The fact that the two numbers
 # are very different is most likely because we had to set the polynomial features degree to 8 as
 # asked from the exercise which ends up overfitting the model. Another approach would be a different
 # number of chosen neighbors in the kNN which also had to be 3 as asked in the exercise.
-
-# 5
 
 # Using the exact same code as above in a for-loop for each degree to extract the R-squared Value
 # which measures the goodness of fit for each degree of the polynomial regression model
