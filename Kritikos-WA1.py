@@ -88,7 +88,7 @@ print("Estimated LSI : ", LSI_estimate)
 # We see that the two predictions we got from the previous questions are different which was
 # expected. Different modeling approaches bring different results. The fact that the two numbers
 # are very different is most likely because we had to set the polynomial features degree to 8 as
-# asked from the exercise which ends up overfitting the model. Other approach would be a different
+# asked from the exercise which ends up overfitting the model. Another approach would be a different
 # number of chosen neighbors in the kNN which also had to be 3 as asked in the exercise.
 
 # 5
