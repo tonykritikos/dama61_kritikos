@@ -24,6 +24,9 @@ lasso_model.fit(X, y)
 lasso_coefficients = lasso_model.named_steps['lasso'].coef_
 print("Lasso coefficients:", lasso_coefficients)
 
+# Console output:
+# Lasso coefficients:[ 1.99505138e+00  1.00934772e+00  7.17664501e-05 -8.06672247e-04]
+
 # The first and second coefficients are approximately 1.995 and 1.009 which are close to
 # the linear term (2*X) and the quadratic term (X^2) respectively. The third and fourth
 # coefficients are very close to zero, which means that Lasso regularization has
@@ -38,6 +41,9 @@ ridge_model.fit(X, y)
 # Coefficients for Ridge model
 ridge_coefficients = ridge_model.named_steps['ridge'].coef_
 print("Ridge coefficients:", ridge_coefficients)
+
+# Console output:
+# Ridge coefficients: [[ 2.00219889e+00  1.01185098e+00 -3.27195639e-04 -9.14443840e-04]]
 
 # The first and second coefficients are approximately 2.002 and 1.012 which are close to
 # the original coefficients for the linear and quadratic terms. The third and fourth
