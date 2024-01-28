@@ -25,7 +25,7 @@ X, y = mnist.data.values.astype(np.float32), mnist.target.astype(int)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1/7, random_state=random_state)
 
 # 2
-# Preprocessing: Standardization and Imputation
+# Preprocessing for better runtime
 preprocessor = Pipeline([
     ('imputer', SimpleImputer(strategy='mean')),
     ('scaler', StandardScaler())
@@ -40,10 +40,9 @@ pca = PCA(n_components=0.90, random_state=random_state)
 X_train_pca = pca.fit_transform(X_train_preprocessed)
 X_test_pca = pca.transform(X_test_preprocessed)
 
-# 3 (continued)
 # Initializing classifiers
 decision_tree = DecisionTreeClassifier(max_depth=10, random_state=random_state)
-random_forest = RandomForestClassifier(n_estimators=50, random_state=random_state, n_jobs=-1)
+random_forest = RandomForestClassifier(n_estimators=50, random_state=random_state, n_jobs=-1) # n_jobs added for better runtime
 adaboost = AdaBoostClassifier(n_estimators=50, random_state=random_state)
 linear_svc = make_pipeline(LinearSVC(max_iter=500, random_state=random_state))
 logistic_regression = LogisticRegression(max_iter=500, random_state=random_state)
@@ -97,4 +96,9 @@ print("Stacking Classifier Score:", stacking_score)
 #             Stacking Classifier Score: 0.9316
 
 # 5
-# Comment
+# The Stacking Classifier showed a performance improvement compared to individual classifiers, with a score of 0.9316.
+# This suggests that combining diverse classifiers using ensemble techniques can yield enhanced predictive capabilities.
+# The Random Forest final estimator in the stacking ensemble played a crucial role in achieving this improved performance.
+# The extended runtime could impact the practical applicability of the model or the machine that is running on, especially
+# in scenarios where quick predictions are essential. Consideration should be given to balancing computational efficiency
+# with model performance, and further exploration of alternative models or optimization techniques may be needed.
