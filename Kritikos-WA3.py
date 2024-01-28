@@ -9,6 +9,10 @@ from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import fetch_openml
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
 
 # ------ Exercise 1 ------
 print("------ Exercise 1 ------")
@@ -102,3 +106,85 @@ print("Stacking Classifier Score:", stacking_score)
 # The extended runtime could impact the practical applicability of the model or the machine that is running on, especially
 # in scenarios where quick predictions are essential. Consideration should be given to balancing computational efficiency
 # with model performance, and further exploration of alternative models or optimization techniques may be needed.
+
+# ------ Exercise 2 ------
+print("      ")
+print("------ Exercise 2 ------")
+
+# Loading the MNIST dataset
+mnist = fetch_openml('mnist_784', version=1)
+X, y = mnist.data.astype('float32'), mnist.target.astype('int')
+
+# 1
+# Filtering digits 7, 8 and 9
+mask = (y == 7) | (y == 8) | (y == 9)
+X_filtered = X[mask]
+y_filtered = y[mask]
+
+# 2
+# Transforming the data by applying PCA and keeping only the first two components
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_filtered)
+
+# 3
+# Visualizing the data
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y_filtered, cmap='jet')
+plt.title('PCA of MNIST digits 7, 8, and 9')
+plt.xlabel('Component 1')
+plt.ylabel('Component 2')
+plt.colorbar()
+plt.show()
+
+# 4
+
+# (5) Initializing attributes for best score and best number of clusters
+best_score = 0
+best_n_clusters = 0
+
+# Training K-Means with 2 to 10 clusters and calculate silhouette scores
+for n_clusters in range(2, 11):
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
+    labels = kmeans.fit_predict(X_pca)
+    silhouette_avg = silhouette_score(X_pca, labels)
+    print(f'Number of clusters: {n_clusters}, Silhouette Score: {silhouette_avg}')
+
+    # (5) Deciding the best score and number of clusters
+    if silhouette_avg > best_score:
+        best_score = silhouette_avg
+        best_n_clusters = n_clusters
+# Console output:
+#             Number of clusters: 2, Silhouette Score: 0.3727215528488159
+#             Number of clusters: 3, Silhouette Score: 0.4312571585178375
+#             Number of clusters: 4, Silhouette Score: 0.3685321509838104
+#             Number of clusters: 5, Silhouette Score: 0.3844033479690552
+#             Number of clusters: 6, Silhouette Score: 0.38583704829216003
+#             Number of clusters: 7, Silhouette Score: 0.38510382175445557
+#             Number of clusters: 8, Silhouette Score: 0.3736627995967865
+#             Number of clusters: 9, Silhouette Score: 0.3698442578315735
+#             Number of clusters: 10, Silhouette Score: 0.362096905708313
+#             Best number of clusters: 3
+
+# 5
+print(f'Best number of clusters: {best_n_clusters}')
+# Console output:
+#             Best number of clusters: 3
+
+# The best number of clusters is 3 which agrees with the number of digits in the data,
+# so this number will be used for the next question
+
+# 6
+# Training the best K-Means model
+best_kmeans = KMeans(n_clusters=best_n_clusters, random_state=random_state)
+best_labels = best_kmeans.fit_predict(X_pca)
+
+# Finding the center of each cluster
+cluster_centers = pca.inverse_transform(best_kmeans.cluster_centers_)
+
+# Plotting representative images of each cluster
+fig, ax = plt.subplots(1, best_n_clusters, figsize=(10, 4))
+for i in range(best_n_clusters):
+    ax[i].imshow(cluster_centers[i].reshape(28, 28), cmap='gray')
+    ax[i].set_title(f'Cluster {i+1}')
+    ax[i].axis('off')
+
+plt.show()
