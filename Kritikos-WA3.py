@@ -18,7 +18,7 @@ random_state = 42
 
 # Loading the MNIST dataset
 mnist = fetch_openml('mnist_784', version=1, cache=True, parser='auto')
-X, y = mnist.data.values.astype(np.float32), mnist.target.astype(int)
+X, y = mnist.data.values.astype(np.float32), mnist.target.astype(int)  # Using astype() and np.float32 to eliminate IDE errors
 
 # 1
 # Splitting the dataset into training and test sets
