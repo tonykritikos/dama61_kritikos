@@ -162,7 +162,6 @@ for n_clusters in range(2, 11):
 #             Number of clusters: 8, Silhouette Score: 0.3736627995967865
 #             Number of clusters: 9, Silhouette Score: 0.3698442578315735
 #             Number of clusters: 10, Silhouette Score: 0.362096905708313
-#             Best number of clusters: 3
 
 # 5
 print(f'Best number of clusters: {best_n_clusters}')
