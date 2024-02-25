@@ -29,14 +29,14 @@ model_50 = Sequential([
     Dense(10, activation='softmax')
 ])
 
-# Defining the 200 node model
+# Defining the 200 node model using Dropout regularization with dropout rate of 0.5
 model_200 = Sequential([
     Dense(200, activation='relu', input_shape=(784,)),
-    Dropout(0.5),  # Dropout regularization with dropout rate of 0.5
+    Dropout(0.5),
     Dense(200, activation='relu'),
-    Dropout(0.5),  # Dropout regularization with dropout rate of 0.5
+    Dropout(0.5),
     Dense(200, activation='relu'),
-    Dropout(0.5),  # Dropout regularization with dropout rate of 0.5
+    Dropout(0.5),
     Dense(10, activation='softmax')
 ])
 
