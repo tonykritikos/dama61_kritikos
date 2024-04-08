@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, LSTM, Dense
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
+
+# Exercise 1
 
 # Loading MNIST dataset & training and test sets
 (X_train_full, y_train_full), (X_test, y_test) = mnist.load_data()
@@ -104,3 +106,108 @@ print("Test accuracy for model configuration 2:", test_acc_config2)
 #           accuracies, the models did not suffer from significant overfitting, as evidenced by their strong performance
 #           on the test set. These results suggest that the chosen architectures effectively captured the underlying
 #           patterns in the MNIST dataset.
+
+
+# Exercise 2
+
+# Generating time series data
+t = np.linspace(0, 14 * np.pi, 10000)
+f = np.cos(t)
+
+# 1
+# Splitting data into training, validation and test sets
+X_train, X_test, y_train, y_test = train_test_split(f[:-1], f[1:], test_size=0.2, shuffle=False)
+X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.5, shuffle=False)
+
+# 2
+# Function to convert time series data into supervised learning dataset
+def create_dataset(data, window_size):
+    X, y = [], []
+    for i in range(len(data) - window_size):
+        X.append(data[i:i+window_size])
+        y.append(data[i+window_size])
+    return np.array(X), np.array(y)
+
+
+window_size = 10
+X_train_win10, y_train_win10 = create_dataset(X_train, window_size)
+X_val_win10, y_val_win10 = create_dataset(X_val, window_size)
+X_test_win10, y_test_win10 = create_dataset(X_test, window_size)
+
+# 3
+# Building LSTM model
+model_win10 = Sequential([
+    LSTM(100, input_shape=(window_size, 1)),
+    Dense(1)
+])
+
+# 4
+# Compiling the model
+model_win10.compile(optimizer='adam', loss='mse')
+
+# 5
+# Fitting the model with early stopping
+early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+history_win10 = model_win10.fit(X_train_win10[..., np.newaxis], y_train_win10, epochs=100,
+                                validation_data=(X_val_win10[..., np.newaxis], y_val_win10),
+                                callbacks=[early_stopping])
+
+# Plotting training and validation loss
+plt.plot(history_win10.history['loss'], label='Training Loss')
+plt.plot(history_win10.history['val_loss'], label='Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.title('Training and Validation Loss (Window Size = 10)')
+plt.legend()
+plt.show()
+
+# 7
+# Making the same process with increased window size
+window_size = 20
+X_train_win20, y_train_win20 = create_dataset(X_train, window_size)
+X_val_win20, y_val_win20 = create_dataset(X_val, window_size)
+X_test_win20, y_test_win20 = create_dataset(X_test, window_size)
+
+# Building LSTM model with the increased window size
+model_win20 = Sequential([
+    LSTM(100, input_shape=(window_size, 1)),
+    Dense(1)
+])
+
+# Compiling the model with the increased window size
+model_win20.compile(optimizer='adam', loss='mse')
+
+# Fitting the new model with early stopping
+history_win20 = model_win20.fit(X_train_win20[..., np.newaxis], y_train_win20, epochs=100,
+                                validation_data=(X_val_win20[..., np.newaxis], y_val_win20),
+                                callbacks=[early_stopping])
+
+# Plotting training and validation loss for the new model
+plt.plot(history_win20.history['loss'], label='Training Loss')
+plt.plot(history_win20.history['val_loss'], label='Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.title('Training and Validation Loss (Window Size = 20)')
+plt.legend()
+plt.show()
+
+# Evaluating both models on test set
+loss_win10 = model_win10.evaluate(X_test_win10[..., np.newaxis], y_test_win10)
+loss_win20 = model_win20.evaluate(X_test_win20[..., np.newaxis], y_test_win20)
+print("Test Loss (Window Size = 10): {:.8f}".format(loss_win10))
+print("Test Loss (Window Size = 20): {:.8f}".format(loss_win20))
+
+# Console output:
+#           Test Loss (Window Size = 10): 0.00000103
+#           Test Loss (Window Size = 20): 0.00000035
+
+# Comment:
+#           Both models exhibit a decrease in training loss, starting from around 0.019 for window size 10 and 0.009
+#           for window size 20, dropping close to 0 within the first epoch. Despite both models achieving low training
+#           loss values, the model with a window size of 20 performs slightly better on the test set, as evidenced by
+#           its lower test loss compared to the model with a window size of 10. Increasing the window size from 10 to 20
+#           results in a model that performs slightly better on the test set, indicating that a larger context window
+#           allows the model to capture more relevant temporal dependencies in the data. It is essential to keep in mind
+#           the test samples results, to know if the model overfits the data (which doesn’t as we see on the results),
+#           but even though the larger window does perform better, the increase in accuracy is small enough to make it
+#           not worth in cases that runtime is of importance.
