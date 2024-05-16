@@ -35,8 +35,6 @@ def build_autoencoder(nodes):
 # Defining the early stopping
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 
-errors = []
-
 # Fitting the model and calculating the reconstruction error for the specific number of nodes
 for nodes in [10, 100, 250]:
     model = build_autoencoder(nodes)
@@ -46,17 +44,25 @@ for nodes in [10, 100, 250]:
               validation_data=(X_val, X_val),
               callbacks=[early_stopping])
     test_loss = model.evaluate(X_test, X_test)
-    errors.append(test_loss)
+    # output
     print(f'Latent dimension {nodes} - Reconstruction Error: {test_loss}')
 
-# Outputs
-print("Reconstruction errors for different latent space sizes:")
-print("10 nodes:", errors[0])
-print("100 nodes:", errors[1])
-print("250 nodes:", errors[2])
-
 # 5
+# Console output:
+#           Latent dimension 10 - Reconstruction Error: 0.0014080990804359317
+#           Latent dimension 100 - Reconstruction Error: 0.00036464014556258917
+#           Latent dimension 250 - Reconstruction Error: 5.670843893312849e-05
+
 # Comments:
+#         From the results we can see that as the number of nodes in the latent space increases, the reconstruction
+#         error decreases. More specifically, with latent dimension number 10 the autoencoder struggles more to capture
+#         the essential features of the data, leading to a higher reconstruction error. Increasing the latent dimension
+#         to 100 provides a substantial improvement in the reconstruction error. This indicates that the model can now
+#         encode more information and reconstruct the images more accurately. When increasing the dimension to 250
+#         there is even more of an improvement but not as significant as the 10 to 100 dimension improvement. The 250
+#         dimension model is the most accurate of the three, but when taking into consideration the runtime and
+#         performance the 100 dimension one is good enough for the task given.
+
 
 
 print("----- Problem 2 -----")
@@ -105,3 +111,10 @@ for nodes in [1, 4, 20]:
 
 # 5
 # Comments:
+#         All autoencoders, regardless of latent space size, manage to reduce most of the noise in the test data.
+#         The autoencoder with a latent space of 1 node struggles to capture the essential features of the original
+#         signal as seen by the plot. The latent space of 4 nodes is sufficient to effectively denoise the signal
+#         without significant loss of information. Increasing the size to 20 nodes does not visibly improve the
+#         quality of the denoised signal. Given that, it implies that a smaller latent space (close to or equal to 4
+#         nodes) is adequate. Using fewer nodes reduces the model complexity and computational requirements, making
+#         the autoencoder more efficient without sacrificing performance.
