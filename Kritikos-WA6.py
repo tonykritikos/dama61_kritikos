@@ -59,9 +59,9 @@ for nodes in [10, 100, 250]:
 #         the essential features of the data, leading to a higher reconstruction error. Increasing the latent dimension
 #         to 100 provides a substantial improvement in the reconstruction error. This indicates that the model can now
 #         encode more information and reconstruct the images more accurately. When increasing the dimension to 250
-#         there is even more of an improvement but not as significant as the 10 to 100 dimension improvement. The 250
-#         dimension model is the most accurate of the three, but when taking into consideration the runtime and
-#         performance the 100 dimension one is good enough for the task given.
+#         there is even more of an improvement (the readable number is close to 0.0000567) but not as significant as the
+#         10 to 100 dimension improvement. The 250 dimension model is the most accurate of the three, but when taking
+#         into consideration the runtime and performance the 100 dimension one is good enough for the task given.
 
 
 
